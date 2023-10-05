@@ -49,27 +49,6 @@ podman create \
 	--restart unless-stopped \
 	ghcr.io/matrix-org/sliding-sync:latest
 
-# create Matrix Facebook bridge
-mkdir -p ./config/service-facebook
-
-podman run --rm -v "$(pwd)/config/service-facebook:/data:z" dock.mau.dev/mautrix/facebook:latest
-sudo sed -Ei "s/^(\s*)(address: https:\/\/example\.com.*$)/\1address: localhost:8008/" ./config/service-facebook/config.yaml
-sudo sed -Ei "s/^(\s*)(domain: example\.com.*$)/\1domain: ${DENDRITE_DOMAIN}/" ./config/service-facebook/config.yaml
-sudo sed -Ei "s/^(\s*)(database: postgres:\/\/username:password@hostname\/db.*$)/\1database: postgres:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_SERVICE_FACEBOOK}/" ./config/service-facebook/config.yaml
-sudo sed -Ei "s/^(\s*)(\"example\.com\": \"user\".*$)/\1\"${DENDRITE_DOMAIN}\": \"user\"/" ./config/service-facebook/config.yaml
-sudo sed -Ei "s/^(\s*)(\"@admin:example\.com\": \"admin\".*$)/\1\"@${DENDRITE_ADMIN}:${DENDRITE_DOMAIN}\": \"admin\"/" ./config/service-facebook/config.yaml
-podman run --rm -v "$(pwd)/config/service-facebook:/data:z" dock.mau.dev/mautrix/facebook:latest
-cp ./config/service-facebook/registration.yaml ./config/dendrite/service-facebook-registration.yaml
-
-podman create \
-	--pod matrix-pod \
-	--name=matrix-service-facebook \
-	--requires=matrix-postgres \
-	--label io.containers.autoupdate=registry \
-	-v "$(pwd)/config/service-facebook:/data:z" \
-	--restart unless-stopped \
-	dock.mau.dev/mautrix/facebook:latest
-
 # create Matrix Dendrite container
 mkdir -p ./config/dendrite
 mkdir -p ./data/dendrite/media ./data/dendrite/jetstream ./data/dendrite/search-index
@@ -102,3 +81,24 @@ echo "Enter the administrator user's password when prompted"
 podman exec -ti matrix-dendrite /bin/create-account --config /etc/dendrite/dendrite.yaml --username "${DENDRITE_ADMIN}"
 podman stop matrix-dendrite
 podman stop matrix-postgres
+
+# create Matrix Facebook bridge
+mkdir -p ./config/service-facebook
+
+podman run --rm -v "$(pwd)/config/service-facebook:/data:z" dock.mau.dev/mautrix/facebook:latest
+sudo sed -Ei "s/^(\s*)(address: https:\/\/example\.com.*$)/\1address: localhost:8008/" ./config/service-facebook/config.yaml
+sudo sed -Ei "s/^(\s*)(domain: example\.com.*$)/\1domain: ${DENDRITE_DOMAIN}/" ./config/service-facebook/config.yaml
+sudo sed -Ei "s/^(\s*)(database: postgres:\/\/username:password@hostname\/db.*$)/\1database: postgres:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_SERVICE_FACEBOOK}/" ./config/service-facebook/config.yaml
+sudo sed -Ei "s/^(\s*)(\"example\.com\": \"user\".*$)/\1\"${DENDRITE_DOMAIN}\": \"user\"/" ./config/service-facebook/config.yaml
+sudo sed -Ei "s/^(\s*)(\"@admin:example\.com\": \"admin\".*$)/\1\"@${DENDRITE_ADMIN}:${DENDRITE_DOMAIN}\": \"admin\"/" ./config/service-facebook/config.yaml
+podman run --rm -v "$(pwd)/config/service-facebook:/data:z" dock.mau.dev/mautrix/facebook:latest
+cp ./config/service-facebook/registration.yaml ./config/dendrite/service-facebook-registration.yaml
+
+podman create \
+	--pod matrix-pod \
+	--name=matrix-service-facebook \
+	--requires=matrix-postgres \
+	--label io.containers.autoupdate=registry \
+	-v "$(pwd)/config/service-facebook:/data:z" \
+	--restart unless-stopped \
+	dock.mau.dev/mautrix/facebook:latest
