@@ -75,8 +75,8 @@ podman container create \
 echo -e '\e[32mGenerating systemd unit files ...\e[0m'
 mkdir -p $HOME/.config/systemd/user
 cd $HOME/.config/systemd/user
-podman generate systemd --files --new --name matrix
-podman generate systemd --files --new --name matrix-element
+podman generate systemd --files --new --name --restart-sec 1 matrix
+podman generate systemd --files --new --name --restart-sec 1 matrix-element
 systemctl --user daemon-reload
 
 # This is the only(?) way to have systemd unit generate container on first start
