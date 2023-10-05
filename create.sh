@@ -61,3 +61,12 @@ podman container create \
 	-v "$(pwd)/data/dendrite/jetstream:/var/dendrite/jetstream" \
 	-v "$(pwd)/data/dendrite/search-index:/var/dendrite/searchindex" \
 	docker.io/matrixdotorg/dendrite-monolith:latest
+
+# create Element container
+echo -e '\e[32mCreating Element container ...\e[0m'
+podman container create \
+	--name=matrix-element \
+	--label io.containers.autoupdate=registry \
+	-v "$(pwd)/config/element/config.json:/app/config.json" \
+	-p "${ELEMENT_PORT}:${ELEMENT_PORT}" \
+	docker.io/vectorim/element-web

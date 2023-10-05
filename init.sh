@@ -8,6 +8,7 @@ echo -e '\e[32mCreating configuration directories ...\e[0m'
 mkdir -p ./config/sync
 mkdir -p ./config/service-facebook
 mkdir -p ./config/dendrite
+mkdir -p ./config/element
 
 # create data directories
 echo -e '\e[32mCreating data directories ...\e[0m'
@@ -50,3 +51,13 @@ sudo sed -Ei "s/^(\s*)(\"example\.com\": \"user\".*$)/\1\"${DENDRITE_DOMAIN}\": 
 sudo sed -Ei "s/^(\s*)(\"@admin:example\.com\": \"admin\".*$)/\1\"@${DENDRITE_ADMIN}:${DENDRITE_DOMAIN}\": \"admin\"/" ./config/service-facebook/config.yaml
 podman container run --rm -v "$(pwd)/config/service-facebook:/data:z" dock.mau.dev/mautrix/facebook:latest
 cp ./config/service-facebook/registration.yaml ./config/dendrite/service-facebook-registration.yaml
+
+# create element config
+wget -qO ./config/element/config.json 'https://github.com/vector-im/element-web/raw/develop/config.sample.json'
+sed -Ei "s/^(\s*)(\"base_url\"\s*:\s*\"https:\/\/matrix-client\.matrix\.org\".*$)/\1\"base_url\": \"https:\/\/${DENDRITE_DOMAIN}\"/" ./config/config.json
+sed -Ei "s/^(\s*)(\"server_name\"\s*:.*$)/\1\"server_name\": \"${DENDRITE_DOMAIN}\"/" ./config/config.json
+sed -Ei "s/^(\s*)(\"disable_guests\"\s*:.*$)/\1\"disable_guests\": true/" ./config/config.json
+sed -Ei "s/^(\s*)(\"default_country_code\"\s*:.*$)/\1\"default_country_code\": \"GR\"/" ./config/config.json
+sed -Ei "s/^(\s*)(\"show_labs_settings\"\s*:.*$)/\1\"show_labs_settings\": true/" ./config/config.json
+sed -Ei "s/^(\s*)(\"default_theme\"\s*:.*$)/\1\"default_theme\": \"dark\"/" ./config/config.json
+sed -Ei "s/^(\s*)(\"servers\"\s*:.*$)/\1\"servers\": [\"${DENDRITE_DOMAIN}\"]/" ./config/config.json

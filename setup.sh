@@ -8,9 +8,8 @@ echo -e '\e[32mGenerating systemd unit files ...\e[0m'
 mkdir -p $HOME/.config/systemd/user
 cd $HOME/.config/systemd/user
 podman generate systemd --files --name matrix
+podman generate systemd --files --name matrix-element
 systemctl --user daemon-reload
-systemctl --user enable pod-matrix
-echo "The matrix pod can be started using \"systemctl --user start pod-matrix\""
 
 
 # Admin account setup

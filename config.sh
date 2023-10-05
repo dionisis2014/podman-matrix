@@ -15,3 +15,6 @@ SYNC_DOMAIN="matrix-sync.dionisis.xyz"
 DENDRITE_PORT=8008
 DENDRITE_DOMAIN="matrix.dionisis.xyz"
 DENDRITE_ADMIN=dionisis2014
+
+# ELEMENT
+ELEMENT_PORT=8007
