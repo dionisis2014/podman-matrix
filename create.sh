@@ -74,14 +74,6 @@ podman create \
 	--restart unless-stopped \
 	docker.io/matrixdotorg/dendrite-monolith:latest
 
-# Admin account setup
-podman start matrix-postgres
-podman start matrix-dendrite
-echo "Enter the administrator user's password when prompted"
-podman exec -ti matrix-dendrite /bin/create-account --config /etc/dendrite/dendrite.yaml --username "${DENDRITE_ADMIN}"
-podman stop matrix-dendrite
-podman stop matrix-postgres
-
 # create Matrix Facebook bridge
 mkdir -p ./config/service-facebook
 
@@ -102,3 +94,13 @@ podman create \
 	-v "$(pwd)/config/service-facebook:/data:z" \
 	--restart unless-stopped \
 	dock.mau.dev/mautrix/facebook:latest
+
+# Admin account setup
+podman start matrix-dendrite
+until [ $(podman inspect -f '{{.State.Running}}' matrix-dendrite) == 'true' ]
+do
+	sleep 1;
+done
+echo "Enter the administrator user's password when prompted"
+podman exec -ti matrix-dendrite /bin/create-account --config /etc/dendrite/dendrite.yaml --username "${DENDRITE_ADMIN}"
+podman stop matrix-pod
