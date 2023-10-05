@@ -37,7 +37,7 @@ fi
 podman create \
 	--pod matrix-pod \
 	--name=matrix-sync \
-	--requires=matrix-postgres \
+	--requires=matrix-postgres,matrix-monolith \
 	--label io.containers.autoupdate=registry \
 	-e SYNCV3_SERVER="localhost:${DENDRITE_CLIENT_PORT}" \
 	-e SYNCV3_SECRET="$(cat ./config/sync/.secret)" \
