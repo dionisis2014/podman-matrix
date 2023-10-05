@@ -57,9 +57,9 @@ podman create \
 	--requires=matrix-postgres \
 	--label io.containers.autoupdate=registry \
 	-v "$(pwd)/config/dendrite:/etc/dendrite" \
-	-v "$(pwd)/data/media:/var/dendrite/media" \
-	-v "$(pwd)/data/jetstream:/var/dendrite/jetstream" \
-	-v "$(pwd)/data/search-index:/var/dendrite/searchindex" \
+	-v "$(pwd)/data/dendrite/media:/var/dendrite/media" \
+	-v "$(pwd)/data/dendrite/jetstream:/var/dendrite/jetstream" \
+	-v "$(pwd)/data/dendrite/search-index:/var/dendrite/searchindex" \
 	--restart unless-stopped \
 	docker.io/matrixdotorg/dendrite-monolith:latest
 
