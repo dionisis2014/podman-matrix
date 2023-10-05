@@ -6,8 +6,7 @@ source config.sh	# load config variables
 # create pod
 podman pod create \
 	-p "${SYNC_PORT}:${SYNC_PORT}" \
-	-p "${DENDRITE_CLIENT_PORT}:${DENDRITE_CLIENT_PORT}" \
-	-p "${DENDRITE_SERVER_PORT}:${DENDRITE_SERVER_PORT}" \
+	-p "${DENDRITE_PORT}:${DENDRITE_PORT}" \
 	matrix-pod
 
 # create PostgreSQL container
@@ -56,15 +55,15 @@ podman create \
 	--name=matrix-sync \
 	--requires=matrix-postgres,matrix-dendrite \
 	--label io.containers.autoupdate=registry \
-	-e SYNCV3_SERVER="localhost:${DENDRITE_CLIENT_PORT}" \
+	-e SYNCV3_SERVER="localhost:${DENDRITE_PORT}" \
 	-e SYNCV3_SECRET="$(cat ./config/sync/.secret)" \
 	-e SYNCV3_BINDADDR="0.0.0.0:${SYNC_PORT}" \
 	-e SYNCV3_DB="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost/${POSTGRES_DATABASE_SYNC}?sslmode=disable" \
 	--restart unless-stopped \
 	ghcr.io/matrix-org/sliding-sync:latest
 
-sed -ri "s/^(\s*)(server_name\s*:.*$)/\1server_name: ${DENDRITE_CLIENT_DOMAIN}/" ./config/dendrite/dendrite.yaml
+sed -ri "s/^(\s*)(server_name\s*:.*$)/\1server_name: ${DENDRITE_DOMAIN}/" ./config/dendrite/dendrite.yaml
 sed -ri "s/^(\s*)(connection_string\s*:.*$)/\1connection_string: postgresql:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_DENDRITE}?sslmode=disable/" ./config/dendrite/dendrite.yaml
-sed -ri "s/^(\s*)(well_known_server_name\s*:.*$)/\1well_known_server_name: \"${DENDRITE_SERVER_DOMAIN}:443\"/" ./config/dendrite/dendrite.yaml
-sed -ri "s/^(\s*)(well_known_client_name\s*:.*$)/\1well_known_client_name: \"https:\/\/${DENDRITE_CLIENT_DOMAIN}\"/" ./config/dendrite/dendrite.yaml
+sed -ri "s/^(\s*)(well_known_server_name\s*:.*$)/\1well_known_server_name: \"${DENDRITE_DOMAIN}:443\"/" ./config/dendrite/dendrite.yaml
+sed -ri "s/^(\s*)(well_known_client_name\s*:.*$)/\1well_known_client_name: \"https:\/\/${DENDRITE_DOMAIN}\"/" ./config/dendrite/dendrite.yaml
 sed -ri "s/^(\s*)(well_known_sliding_sync_proxy\s*:.*$)/\1well_known_sliding_sync_proxy: \"${SYNC_DOMAIN}:443\"/" ./config/dendrite/dendrite.yaml
