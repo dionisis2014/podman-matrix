@@ -28,6 +28,23 @@ podman create \
 	--health-retries 5 \
 	docker.io/postgres:15-alpine
 
+# create Matrix Dendrite container
+mkdir -p ./config/dendrite
+mkdir -p ./data/dendrite/media ./data/dendrite/jetstream ./data/dendrite/search-index
+wget -qO ./config/dendrite/dendrite.yaml 'https://github.com/matrix-org/dendrite/raw/main/dendrite-sample.yaml'
+podman run --rm --entrypoint="" -v "$(pwd)/config/dendrite:/etc/dendrite" docker.io/matrixdotorg/dendrite-monolith:latest /usr/bin/generate-keys -private-key /etc/dendrite/matrix_key.pem
+podman create \
+	--pod matrix-pod \
+	--name=matrix-dendrite \
+	--requires=matrix-postgres \
+	--label io.containers.autoupdate=registry \
+	-v "$(pwd)/config/dendrite:/etc/dendrite" \
+	-v "$(pwd)/data/dendrite/media:/var/dendrite/media" \
+	-v "$(pwd)/data/dendrite/jetstream:/var/dendrite/jetstream" \
+	-v "$(pwd)/data/dendrite/search-index:/var/dendrite/searchindex" \
+	--restart unless-stopped \
+	docker.io/matrixdotorg/dendrite-monolith:latest
+
 # create Matrix Sliding Sync container
 mkdir -p ./config/sync
 if [ ! -e "./config/sync/.secret" ]
@@ -37,7 +54,7 @@ fi
 podman create \
 	--pod matrix-pod \
 	--name=matrix-sync \
-	--requires=matrix-postgres,matrix-monolith \
+	--requires=matrix-postgres,matrix-dendrite \
 	--label io.containers.autoupdate=registry \
 	-e SYNCV3_SERVER="localhost:${DENDRITE_CLIENT_PORT}" \
 	-e SYNCV3_SECRET="$(cat ./config/sync/.secret)" \
@@ -45,23 +62,6 @@ podman create \
 	-e SYNCV3_DB="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost/${POSTGRES_DATABASE_SYNC}?sslmode=disable" \
 	--restart unless-stopped \
 	ghcr.io/matrix-org/sliding-sync:latest
-
-# create Matrix Dendrite container
-mkdir -p ./config/dendrite
-mkdir -p ./data/dendrite/media ./data/dendrite/jetstream ./data/dendrite/search-index
-wget -qO ./config/dendrite/dendrite.yaml 'https://github.com/matrix-org/dendrite/raw/main/dendrite-sample.yaml'
-podman run --rm --entrypoint="" -v "$(pwd)/config/dendrite:/etc/dendrite" docker.io/matrixdotorg/dendrite-monolith:latest /usr/bin/generate-keys -private-key /etc/dendrite/matrix_key.pem
-podman create \
-	--pod matrix-pod \
-	--name=matrix-monolith \
-	--requires=matrix-postgres \
-	--label io.containers.autoupdate=registry \
-	-v "$(pwd)/config/dendrite:/etc/dendrite" \
-	-v "$(pwd)/data/dendrite/media:/var/dendrite/media" \
-	-v "$(pwd)/data/dendrite/jetstream:/var/dendrite/jetstream" \
-	-v "$(pwd)/data/dendrite/search-index:/var/dendrite/searchindex" \
-	--restart unless-stopped \
-	docker.io/matrixdotorg/dendrite-monolith:latest
 
 sed -ri "s/^(\s*)(server_name\s*:.*$)/\1server_name: ${DENDRITE_CLIENT_DOMAIN}/" ./config/dendrite/dendrite.yaml
 sed -ri "s/^(\s*)(connection_string\s*:.*$)/\1connection_string: postgresql:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_DENDRITE}?sslmode=disable/" ./config/dendrite/dendrite.yaml
