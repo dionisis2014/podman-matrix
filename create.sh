@@ -70,3 +70,15 @@ podman container create \
 	-v "$(pwd)/config/element/config.json:/app/config.json" \
 	-p "${ELEMENT_PORT}:80" \
 	docker.io/vectorim/element-web
+
+# Generate systemd user services
+echo -e '\e[32mGenerating systemd unit files ...\e[0m'
+mkdir -p $HOME/.config/systemd/user
+cd $HOME/.config/systemd/user
+podman generate systemd --files --new --name matrix
+podman generate systemd --files --new --name matrix-element
+systemctl --user daemon-reload
+
+# This is the only(?) way to have systemd unit generate container on first start
+podman pod rm matrix
+podman container rm matrix-element
