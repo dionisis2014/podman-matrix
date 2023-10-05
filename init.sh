@@ -54,10 +54,10 @@ cp ./config/service-facebook/registration.yaml ./config/dendrite/service-faceboo
 
 # create element config
 wget -qO ./config/element/config.json 'https://github.com/vector-im/element-web/raw/develop/config.sample.json'
-sed -Ei "s/^(\s*)(\"base_url\"\s*:\s*\"https:\/\/matrix-client\.matrix\.org\".*$)/\1\"base_url\": \"https:\/\/${DENDRITE_DOMAIN}\"/" ./config/config.json
-sed -Ei "s/^(\s*)(\"server_name\"\s*:.*$)/\1\"server_name\": \"${DENDRITE_DOMAIN}\"/" ./config/config.json
-sed -Ei "s/^(\s*)(\"disable_guests\"\s*:.*$)/\1\"disable_guests\": true/" ./config/config.json
-sed -Ei "s/^(\s*)(\"default_country_code\"\s*:.*$)/\1\"default_country_code\": \"GR\"/" ./config/config.json
-sed -Ei "s/^(\s*)(\"show_labs_settings\"\s*:.*$)/\1\"show_labs_settings\": true/" ./config/config.json
-sed -Ei "s/^(\s*)(\"default_theme\"\s*:.*$)/\1\"default_theme\": \"dark\"/" ./config/config.json
-sed -Ei "s/^(\s*)(\"servers\"\s*:.*$)/\1\"servers\": [\"${DENDRITE_DOMAIN}\"]/" ./config/config.json
+sed -Ei "s/^(\s*)(\"base_url\"\s*:\s*\"https:\/\/matrix-client\.matrix\.org\".*$)/\1\"base_url\": \"https:\/\/${DENDRITE_DOMAIN}\"/" ./config/element/config.json
+sed -Ei "s/^(\s*)(\"server_name\"\s*:.*$)/\1\"server_name\": \"${DENDRITE_DOMAIN}\"/" ./config/element/config.json
+sed -Ei "s/^(\s*)(\"disable_guests\"\s*:.*$)/\1\"disable_guests\": true/" ./config/element/config.json
+sed -Ei "s/^(\s*)(\"default_country_code\"\s*:.*$)/\1\"default_country_code\": \"GR\"/" ./config/element/config.json
+sed -Ei "s/^(\s*)(\"show_labs_settings\"\s*:.*$)/\1\"show_labs_settings\": true/" ./config/element/config.json
+sed -Ei "s/^(\s*)(\"default_theme\"\s*:.*$)/\1\"default_theme\": \"dark\"/" ./config/element/config.json
+sed -Ei "s/^(\s*)(\"servers\"\s*:.*$)/\1\"servers\": [\"${DENDRITE_DOMAIN}\"]/" ./config/element/config.json
