@@ -4,14 +4,14 @@ cd $(dirname $0)	# change to this script's directory
 source config.sh	# load config variables
 
 # create pod
-PODID=$( \
+echo -e '\e[32mCreating matrix pod ...\e[0m'
 podman pod create \
 	-p "${SYNC_PORT}:${SYNC_PORT}" \
 	-p "${DENDRITE_PORT}:${DENDRITE_PORT}" \
-	matrix \
-)
+	matrix
 
 # create PostgreSQL container
+echo -e '\e[32mCreating PostgreSQL container ...\e[0m'
 podman container create \
 	--pod matrix \
 	--name=matrix-postgres \
@@ -27,6 +27,7 @@ podman container create \
 	docker.io/postgres:15-alpine
 
 # create Matrix Sliding Sync container
+echo -e '\e[32mCreating Sliding Sync Proxy container ...\e[0m'
 podman container create \
 	--pod matrix \
 	--name=matrix-sync \
@@ -39,6 +40,7 @@ podman container create \
 	ghcr.io/matrix-org/sliding-sync:latest
 
 # create Matrix Facebook bridge
+echo -e '\e[32mCreating Matrix Facebook bridge container ...\e[0m'
 podman create \
 	--pod matrix \
 	--name=matrix-service-facebook \
@@ -48,6 +50,7 @@ podman create \
 	dock.mau.dev/mautrix/facebook:latest
 
 # create Matrix Dendrite container
+echo -e '\e[32mCreating dendrite container ...\e[0m'
 podman container create \
 	--pod matrix \
 	--name=matrix-dendrite \
