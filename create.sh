@@ -68,5 +68,5 @@ podman container create \
 	--name=matrix-element \
 	--label io.containers.autoupdate=registry \
 	-v "$(pwd)/config/element/config.json:/app/config.json" \
-	-p "${ELEMENT_PORT}:${ELEMENT_PORT}" \
+	-p "${ELEMENT_PORT}:80" \
 	docker.io/vectorim/element-web
