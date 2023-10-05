@@ -3,7 +3,7 @@
 cd $(dirname $0)	# change to this script's directory
 
 podman pod exists matrix-pod
-if [ $? -e 0 ]
+if [ $? -eq 0 ]
 then
 	podman pod stop matrix-pod
 	podman pod rm matrix-pod
