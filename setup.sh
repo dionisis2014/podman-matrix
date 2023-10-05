@@ -4,7 +4,11 @@ cd $(dirname $0)	# change to this script's directory
 source config.sh	# load config variables
 
 # create pod
-podman pod create matrix-pod
+podman pod create \
+	-p "${SYNC_PORT}:${SYNC_PORT}" \
+	-p "${DENDRITE_CLIENT_PORT}:${DENDRITE_CLIENT_PORT}" \
+	-p "${DENDRITE_SERVER_PORT}:${DENDRITE_SERVER_PORT}" \
+	matrix-pod
 
 # create PostgreSQL container
 mkdir -p ./data/postgresql
@@ -19,7 +23,7 @@ podman create \
 	-v "$(pwd)/docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d" \
 	-v "$(pwd)/data/postgresql:/var/lib/postgresql/data" \
 	--restart unless-stopped \
-	--health-command 'pg_isready -U dendrite' \
+	--health-cmd 'pg_isready -U dendrite' \
 	--health-interval 5s \
 	--health-retries 5 \
 	docker.io/postgres:15-alpine
@@ -39,7 +43,6 @@ podman create \
 	-e SYNCV3_SECRET="$(cat ./config/sync/.secret)" \
 	-e SYNCV3_BINDADDR="0.0.0.0:${SYNC_PORT}" \
 	-e SYNCV3_DB="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost/${POSTGRES_DATABASE_SYNC}?sslmode=disable" \
-	-p "${SYNC_PORT}:${SYNC_PORT}" \
 	--restart unless-stopped \
 	ghcr.io/matrix-org/sliding-sync:latest
 
@@ -57,8 +60,6 @@ podman create \
 	-v "$(pwd)/data/media:/var/dendrite/media" \
 	-v "$(pwd)/data/jetstream:/var/dendrite/jetstream" \
 	-v "$(pwd)/data/search-index:/var/dendrite/searchindex" \
-	-p "${DENDRITE_CLIENT_PORT}:${DENDRITE_CLIENT_PORT}" \
-	-p "${DENDRITE_SERVER_PORT}:${DENDRITE_SERVER_PORT}" \
 	--restart unless-stopped \
 	docker.io/matrixdotorg/dendrite-monolith:latest
 
