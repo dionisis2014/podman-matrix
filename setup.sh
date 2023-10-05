@@ -7,10 +7,13 @@ source config.sh	# load config variables
 echo -e '\e[32mGenerating systemd unit files ...\e[0m'
 mkdir -p $HOME/.config/systemd/user
 cd $HOME/.config/systemd/user
-podman generate systemd --files --name matrix
-podman generate systemd --files --name matrix-element
+podman generate systemd --files --new --name matrix
+podman generate systemd --files --new --name matrix-element
 systemctl --user daemon-reload
 
+# This is the only(?) way to have systemd unit generate container on first start
+podman pod rm matrix
+podman container rm matrix-element
 
 # Admin account setup
 echo -e '\e[32mSetting up administrator account ...\e[0m'
