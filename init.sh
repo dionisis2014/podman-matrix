@@ -44,7 +44,7 @@ podman container run --rm --entrypoint="" -v "$(pwd)/config/dendrite:/etc/dendri
 # create Matrix Facebook bridge config and registration
 echo -e '\e[32mConfiguring Matrix Facebook bridge ...\e[0m'
 podman container run --rm -v "$(pwd)/config/service-facebook:/data:z" dock.mau.dev/mautrix/facebook:latest
-sudo sed -Ei "s/^(\s*)(address: https:\/\/example\.com.*$)/\1address: \"localhost:8008\"/" ./config/service-facebook/config.yaml
+sudo sed -Ei "s/^(\s*)(address: https:\/\/example\.com.*$)/\1address: \"http:\/\/localhost:8008\"/" ./config/service-facebook/config.yaml
 sudo sed -Ei "s/^(\s*)(domain: example\.com.*$)/\1domain: \"${DENDRITE_DOMAIN}\"/" ./config/service-facebook/config.yaml
 sudo sed -Ei "s/^(\s*)(database: postgres:\/\/username:password@hostname\/db.*$)/\1database: \"postgres:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_SERVICE_FACEBOOK}\"/" ./config/service-facebook/config.yaml
 sudo sed -Ei "s/^(\s*)(\"example\.com\": \"user\".*$)/\1\"${DENDRITE_DOMAIN}\": \"user\"/" ./config/service-facebook/config.yaml
