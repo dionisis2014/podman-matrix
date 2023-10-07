@@ -6,6 +6,8 @@ cd $(dirname $0)	# change to this script's directory
 echo -e '\e[32mCleaning configuration and data directories ...\e[0m'
 sudo rm -rf ./config ./data ./docker-postgresql-multiple-databases
 echo -e '\e[32mRemoving systemd unit files ...\e[0m'
+systemctl --user disable pod-matrix.service
+systemctl --user disable container-matrix-element.service
 rm $HOME/.config/systemd/user/pod-matrix.service
 rm $HOME/.config/systemd/user/container-matrix-postgres.service
 rm $HOME/.config/systemd/user/container-matrix-sync.service
