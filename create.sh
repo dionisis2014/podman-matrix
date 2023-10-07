@@ -33,7 +33,7 @@ podman container create \
 	--name=matrix-sync \
 	--requires=matrix-postgres \
 	--label io.containers.autoupdate=registry \
-	-e SYNCV3_SERVER="localhost:${DENDRITE_PORT}" \
+	-e SYNCV3_SERVER="https://${DENDRITE_SERVER}" \
 	-e SYNCV3_SECRET="$(cat ./config/sync/.secret)" \
 	-e SYNCV3_BINDADDR="0.0.0.0:${SYNC_PORT}" \
 	-e SYNCV3_DB="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost/${POSTGRES_DATABASE_SYNC}?sslmode=disable" \
