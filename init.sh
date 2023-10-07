@@ -35,7 +35,7 @@ sed -Ei "s/^(\s*)(well_known_server_name\s*:.*$)/\1well_known_server_name: \"${D
 sed -Ei "s/^(\s*)(well_known_client_name\s*:.*$)/\1well_known_client_name: \"https:\/\/${DENDRITE_DOMAIN}\"/" ./config/dendrite/dendrite.yaml
 sed -Ei "s/^(\s*)(well_known_sliding_sync_proxy\s*:.*$)/\1well_known_sliding_sync_proxy: \"${SYNC_DOMAIN}:443\"/" ./config/dendrite/dendrite.yaml
 sed -Ei "s/^(\s*)(#  - \/path\/to\/appservice_registration\.yaml.*$)/\1  - \"service-facebook-registration.yaml\"/" ./config/dendrite/dendrite.yaml
-sed -Ei "s/^(\s*)(registration_shared_secret\s*:.*$)/\1registration_shared_secret: \"${DENDRITE_SHARED_SECRET}:443\"/" ./config/dendrite/dendrite.yaml
+sed -Ei "s/^(\s*)(registration_shared_secret\s*:.*$)/\1registration_shared_secret: \"${DENDRITE_SHARED_SECRET}\"/" ./config/dendrite/dendrite.yaml
 
 # generate dendrite matrix key
 echo -e '\e[32mGenerating dendrite matrix key ...\e[0m'

@@ -15,6 +15,7 @@ SYNC_DOMAIN="matrix-sync.example.com"
 DENDRITE_PORT=8008
 DENDRITE_DOMAIN="matrix.example.com"
 DENDRITE_ADMIN=dionisis2014
+DENDRITE_SHARED_SECRET="itsasecret"
 
 # ELEMENT
 ELEMENT_PORT=8007
