@@ -29,8 +29,8 @@ fi
 # generate dendrite config
 echo -e '\e[32mConfiguring dendrite ...\e[0m'
 wget -qO ./config/dendrite/dendrite.yaml 'https://github.com/matrix-org/dendrite/raw/main/dendrite-sample.yaml'
-sed -Ei "s/^(\s*)(server_name\s*:.*$)/\1server_name: ${DENDRITE_DOMAIN}/" ./config/dendrite/dendrite.yaml
-sed -Ei "s/^(\s*)(connection_string\s*:.*$)/\1connection_string: postgresql:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_DENDRITE}?sslmode=disable/" ./config/dendrite/dendrite.yaml
+sed -Ei "s/^(\s*)(server_name\s*:.*$)/\1server_name: \"${DENDRITE_DOMAIN}\"/" ./config/dendrite/dendrite.yaml
+sed -Ei "s/^(\s*)(connection_string\s*:.*$)/\1connection_string: \"postgresql:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_DENDRITE}?sslmode=disable\"/" ./config/dendrite/dendrite.yaml
 sed -Ei "s/^(\s*)(well_known_server_name\s*:.*$)/\1well_known_server_name: \"${DENDRITE_DOMAIN}:443\"/" ./config/dendrite/dendrite.yaml
 sed -Ei "s/^(\s*)(well_known_client_name\s*:.*$)/\1well_known_client_name: \"https:\/\/${DENDRITE_DOMAIN}\"/" ./config/dendrite/dendrite.yaml
 sed -Ei "s/^(\s*)(well_known_sliding_sync_proxy\s*:.*$)/\1well_known_sliding_sync_proxy: \"${SYNC_DOMAIN}:443\"/" ./config/dendrite/dendrite.yaml
@@ -44,9 +44,9 @@ podman container run --rm --entrypoint="" -v "$(pwd)/config/dendrite:/etc/dendri
 # create Matrix Facebook bridge config and registration
 echo -e '\e[32mConfiguring Matrix Facebook bridge ...\e[0m'
 podman container run --rm -v "$(pwd)/config/service-facebook:/data:z" dock.mau.dev/mautrix/facebook:latest
-sudo sed -Ei "s/^(\s*)(address: https:\/\/example\.com.*$)/\1address: localhost:8008/" ./config/service-facebook/config.yaml
-sudo sed -Ei "s/^(\s*)(domain: example\.com.*$)/\1domain: ${DENDRITE_DOMAIN}/" ./config/service-facebook/config.yaml
-sudo sed -Ei "s/^(\s*)(database: postgres:\/\/username:password@hostname\/db.*$)/\1database: postgres:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_SERVICE_FACEBOOK}/" ./config/service-facebook/config.yaml
+sudo sed -Ei "s/^(\s*)(address: https:\/\/example\.com.*$)/\1address: \"localhost:8008\"/" ./config/service-facebook/config.yaml
+sudo sed -Ei "s/^(\s*)(domain: example\.com.*$)/\1domain: \"${DENDRITE_DOMAIN}\"/" ./config/service-facebook/config.yaml
+sudo sed -Ei "s/^(\s*)(database: postgres:\/\/username:password@hostname\/db.*$)/\1database: \"postgres:\/\/${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost\/${POSTGRES_DATABASE_SERVICE_FACEBOOK}\"/" ./config/service-facebook/config.yaml
 sudo sed -Ei "s/^(\s*)(\"example\.com\": \"user\".*$)/\1\"${DENDRITE_DOMAIN}\": \"user\"/" ./config/service-facebook/config.yaml
 sudo sed -Ei "s/^(\s*)(\"@admin:example\.com\": \"admin\".*$)/\1\"@${DENDRITE_ADMIN}:${DENDRITE_DOMAIN}\": \"admin\"/" ./config/service-facebook/config.yaml
 podman container run --rm -v "$(pwd)/config/service-facebook:/data:z" dock.mau.dev/mautrix/facebook:latest
