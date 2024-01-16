@@ -60,7 +60,7 @@ podman container create \
 	-v "$(pwd)/data/dendrite/media:/var/dendrite/media" \
 	-v "$(pwd)/data/dendrite/jetstream:/var/dendrite/jetstream" \
 	-v "$(pwd)/data/dendrite/search-index:/var/dendrite/searchindex" \
-	docker.io/matrixdotorg/dendrite-monolith:latest
+	docker.io/matrixdotorg/dendrite-monolith:main
 
 # create Element container
 echo -e '\e[32mCreating Element container ...\e[0m'
