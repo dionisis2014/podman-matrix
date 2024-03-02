@@ -52,6 +52,7 @@ To simply remove the containers and the systemd files run:
 ./remove.sh
 ```
 If you want to remove the data as well follow the above with:
+
 **YOU WILL LOSE ALL DATA**
 ```shell
 ./clean.sh
